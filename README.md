@@ -1,4 +1,5 @@
-# Kura Labs Cohort 5- Deployment Workload 2
+# Retail Banking App Deployed to Elastic Beanstalk 2
+
 ## CICD with AWS CLI:
 
 Welcome to Deployment Workload 2!  In the first deployment workload, we manually uploaded the source code to AWS EB.  Let’s start automating more of that pipeline.  
