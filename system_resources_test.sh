@@ -78,7 +78,6 @@ check_disk() {
     #     - 's/%//g' is a 'sed' substitution command that replaces the '%' character with nothing (i.e., deletes it).
     #     - The 'g' at the end ensures that all occurrences of '%' are removed, though in this case, there should only be one.
     # - The final result is stored in the DISK_USED variable as a numeric value representing the disk usage percentage for the root filesystem.
-DISK_USED=$(df / | grep / | awk '{ print $5}' | sed 's/%//g')
     DISK_USED=$(df / | grep / | awk '{ print $5}' | sed 's/%//g')
     
     if [ "$DISK_USED" -ge "$DISK_THRESHOLD" ]; then
