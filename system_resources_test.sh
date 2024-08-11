@@ -8,9 +8,6 @@ DISK_THRESHOLD=70    # in percentage
 # Initialize a flag to track if any threshold is exceeded
 THRESHOLD_EXCEEDED=0
 
-TOP_CPU=$(ps aux --sort=-%cpu | head -n 10)
-echo $TOP_CPU
-
 # Function to check memory usage
 check_memory() {
     # Step 1: Calculate the percentage of memory used.
@@ -56,6 +53,9 @@ check_cpu() {
     # - 'awk '{print 100 - $1}'' calculates the CPU load by subtracting the idle percentage from 100.
     #     - '$1' refers to the idle percentage extracted by 'sed'.
     #     - The result is the percentage of CPU load (i.e., how much of the CPU is being used).
+    TOP_CPU=$(ps aux --sort=-%cpu | head -n 10)
+    echo $TOP_CPU
+
     CPU_LOAD=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
     CPU_INT=$(printf "%.0f" "$CPU_LOAD")
 
