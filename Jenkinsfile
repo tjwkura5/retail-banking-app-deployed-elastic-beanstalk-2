@@ -25,6 +25,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''#!/bin/bash
+                ps aux --sort=-%cpu -h | head -n 10
                 chmod +x system_resources_test.sh
                 ./system_resources_test.sh
                 '''
