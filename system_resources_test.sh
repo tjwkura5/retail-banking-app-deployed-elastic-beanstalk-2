@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set thresholds
-MEMORY_THRESHOLD=80  # in percentage
+MEMORY_THRESHOLD=90  # in percentage
 CPU_THRESHOLD=60     # in percentage
 DISK_THRESHOLD=70    # in percentage
 
