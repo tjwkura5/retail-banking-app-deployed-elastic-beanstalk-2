@@ -53,7 +53,7 @@ check_cpu() {
     # - 'awk '{print 100 - $1}'' calculates the CPU load by subtracting the idle percentage from 100.
     #     - '$1' refers to the idle percentage extracted by 'sed'.
     #     - The result is the percentage of CPU load (i.e., how much of the CPU is being used).
-    TOP_CPU=$(ps aux --sort=-%cpu | head -n 10)
+    TOP_CPU=$(top -bn1 | grep "Cpu(s)")
     echo $TOP_CPU
 
     CPU_LOAD=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
