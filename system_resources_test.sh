@@ -94,9 +94,10 @@ check_disk() {
 
 # Main script
 echo "Checking system resources..."
+sleep 5
+check_cpu
 check_memory
 check_disk
-check_cpu
 
 # Exit with code 0 if all is well, or 1 if any threshold is exceeded
 if [ "$THRESHOLD_EXCEEDED" -eq 1 ]; then
