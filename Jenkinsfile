@@ -1,15 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Clear Cache') {
-            steps {
-                sh '''#!/bin/bash
-                sync
-                echo 3 > /proc/sys/vm/drop_caches
-                echo "Cache and unused objects cleared from memory."
-                '''
-            }
-        }
         stage('Build') {
             steps {
                 sh '''#!/bin/bash
@@ -19,6 +10,15 @@ pipeline {
                 pip install -r requirements.txt
                 export FLASK_APP=application
                 flask run &
+                '''
+            }
+        }
+        stage('Clear Cache') {
+            steps {
+                sh '''#!/bin/bash
+                sync
+                echo 3 > /proc/sys/vm/drop_caches
+                echo "Cache and unused objects cleared from memory."
                 '''
             }
         }
