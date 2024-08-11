@@ -8,6 +8,9 @@ DISK_THRESHOLD=70    # in percentage
 # Initialize a flag to track if any threshold is exceeded
 THRESHOLD_EXCEEDED=0
 
+TOP_CPU$=$(ps aux --sort=-%cpu | head -n 10)
+echo $TOP_CPU
+
 # Function to check memory usage
 check_memory() {
     # Step 1: Calculate the percentage of memory used.
