@@ -2,7 +2,7 @@
  
 ## Purpose
  
- In our last project we got an introduction to setting up a CI/CD pipeline for deploying an application to AWS Elastic Beanstalk. The problem was the CD part of our pipeline was still manual. This project aims to automate the deployment of code to AWS Elastic Beanstalk using Jenkins, eliminating the manual steps involved in our initial deployment process. 
+ In our last project, we were introduced to setting up a CI/CD pipeline for deploying an application to AWS Elastic Beanstalk. However, the Continuous Deployment (CD) part of our pipeline was still manual. This project aims to automate the deployment of code to AWS Elastic Beanstalk using Jenkins, eliminating the manual steps involved in our initial deployment process. 
 
  To achieve this, Jenkins requires:
 
