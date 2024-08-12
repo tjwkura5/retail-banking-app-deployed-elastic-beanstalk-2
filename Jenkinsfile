@@ -37,6 +37,7 @@ pipeline {
               eb create retail-bank-env --single
               '''
           }
+        }
     }
 }
 
