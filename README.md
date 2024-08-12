@@ -63,7 +63,7 @@ Sharing your AWS access keys is dangerous because someone with these keys can po
 
 6. Select the appropriate "use case", and then click "Next" and then "Create access key"
 
-7. View your access keys and store it somewhere safe becuase you will need them later. ACCESS KEYS CAN ONLY BE VIEWED ONCE!
+7. View your access keys and store them somewhere safe becuase you will need them later. ACCESS KEYS CAN ONLY BE VIEWED ONCE!
 
 ## Create Bash Script to Test System Resources
 
@@ -337,7 +337,7 @@ The **AWS Elastic Beanstalk Command Line Interface (EB CLI)** is a command-line 
 3. Navigate back to the Jenkins Console and build the pipeline again.
 
 
-If the pipeline sucessfully completes, navigate to AWS Elastic Beanstalk in the AWS Console and check for the environment that is created. The application should be running at the domain created by Elastic Beanstalk.
+If the pipeline sucessfully completes, navigate to AWS Elastic Beanstalk in the AWS Console and check for the environment that is created. The application should be running at the domain created by Elastic Beanstalk. 
 
 ![Successful Jenkins Build Two](documentation/Build_16_Final.png)
 
@@ -349,13 +349,33 @@ If the pipeline sucessfully completes, navigate to AWS Elastic Beanstalk in the 
 
 ## Issues/Troubleshooting
 
+The issue I encountered in this project was related to the system resource tests we implemented. After running the build stage of our pipeline, there were significant spikes in memory and CPU usage. Additionally, when trying to access the Jenkins web interface, the page load times were extremely slow. I initially set the memory and CPU thresholds at 80% and 60%, respectively, based on recommendations from class and a Google search for best practices. Amazon's t2.micro EC2 instances come with around 1,000 MB of memory (RAM) and 1 virtual CPU.
+
+The fix for the CPU usage spike was relatively simple. I ran the top command to identify which processes were using the most CPU while the pipeline was running and noticed that these spikes didn't last very long. To address this, I added a 5-second wait in my script right before checking CPU usage.
+
+However, addressing the memory usage spikes was more challenging. I tried three approaches to conserve memory before ultimately deciding to increase the threshold to 90%. First, I uninstalled or disabled Jenkins plugins that I didn't think were necessary. Then, I introduced a new stage in our pipeline to clear the cache or remove unused objects from memory after the build stage. Finally, I attempted to reduce the Java heap size for Jenkins by adding the line JAVA_ARGS="-Xmx256m -Xms128m" to the Jenkins startup script. The -Xms parameter sets the initial heap size, and the -Xmx parameter sets the maximum heap size for the JVM.
+
+Despite these efforts, I had 13 unsuccessful builds and only managed to reduce memory usage to 79%. Since this wasn't a significant improvement, I decided to increase my memory threshold to 90%.
+
+If you take a look at my Jenkins file you will noticed that I added the following two lines to our build stage:
+
+```
+export FLASK_APP=application
+flask run &
+```
+The first line sets the FLASK_APP environment variable, telling Flask which application to run. In our case, it's pointing to our application.py file. The second command starts the Flask development server, allowing our application to run. The & at the end runs the server in the background, allowing the script to continue executing subsequent commands while the server is running.
+
+In the last project, I encountered an issue with how we were zipping and uploading our application to AWS Elastic Beanstalk. Anticipating a similar problem for this project, I made sure to find tutorials and documentation that could help me avoid it. I reviewed AWS's developer guide for [Deploying a Flask application to Elastic Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-flask.html) and noticed that they were serving the application before the deployment phase. I considered that I might need to do the same.
+
+In hindsight, I don't think that this was needed since none of the stages in my pipeline explicitly interact with the running Flask application. Also, having the Flask app running in the background probably contributed to the spike in memory usage. When the Flask application is started, it consumes memory to load the application, its dependencies, and any other resources it needs to operate.
+
 ## Optimization
 
 **How is using a deploy stage in the CICD pipeline able to increase efficiency of the buisiness?**
 
-* **Faster Releases:** Automates deployment, speeding up the release of features and bug fixes.
-* **Consistency:** Ensures reliable and consistent deployments, reducing downtime.
-* **Reduced Manual Effort:** Frees up developers to focus on cooler things by eliminating manual deployment steps.
+* Faster Releases: Automates deployment, speeding up the release of features and bug fixes.
+* Consistency: Ensures reliable and consistent deployments, reducing downtime.
+* Reduced Manual Effort: Frees up developers to focus on cooler things by eliminating manual deployment steps.
 
 **What issues, if any, can you think of that might come with automating source code to a production environment?** 
 
@@ -363,6 +383,6 @@ The potential issues with fully automated processes stem from the lack of human 
 
 **How would you address/resolve this?**
 
-The first step I would take is implement a comprehensive testing strategy combining manual and automated tests within our pipeline. Establishing a staging environment for pre-production validation is crucial. Integrating automated security scanning into the pipeline can proactively detect vulnerabilities. Finally, robust monitoring and alerting with automated rollback capabilities are essential in case problems arise.
+I would address this by first implementing a comprehensive testing strategy combining manual and automated tests within our pipeline. Establishing a staging environment for pre-production validation is crucial. Integrating automated security scanning into the pipeline can proactively detect vulnerabilities. Finally, robust monitoring and alerting with automated rollback capabilities are essential in case problems arise.
 
 ## Conclusion 
