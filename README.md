@@ -2,7 +2,7 @@
  
 ## Purpose
  
- In our last project we got an introduction to setting up a CI/CD pipeline for deploying an application to AWS Elastic Beanstalk. The problem was the CD part of our pipeline was still manual which is inefficient. This project aims to automate the deployment of code to AWS Elastic Beanstalk using Jenkins, eliminating the manual steps involved in our initial deployment process. Previously, we had to manually download, zip, and upload our code to Elastic Beanstalk. Now, the goal is for Jenkins to handle this automatically after building and testing.
+ In our last project we got an introduction to setting up a CI/CD pipeline for deploying an application to AWS Elastic Beanstalk. The problem was the CD part of our pipeline was still manual. This project aims to automate the deployment of code to AWS Elastic Beanstalk using Jenkins, eliminating the manual steps involved in our initial deployment process. 
 
  To achieve this, Jenkins requires:
 
@@ -355,7 +355,7 @@ The fix for the CPU usage spike was relatively simple. I ran the top command to 
 
 However, addressing the memory usage spikes was more challenging. I tried three approaches to conserve memory before ultimately deciding to increase the threshold to 90%. First, I uninstalled or disabled Jenkins plugins that I didn't think were necessary. Then, I introduced a new stage in our pipeline to clear the cache or remove unused objects from memory after the build stage. Finally, I attempted to reduce the Java heap size for Jenkins by adding the line JAVA_ARGS="-Xmx256m -Xms128m" to the Jenkins startup script. The -Xms parameter sets the initial heap size, and the -Xmx parameter sets the maximum heap size for the JVM.
 
-Despite these efforts, I had 13 unsuccessful builds and only managed to reduce memory usage to 79%. Since this wasn't a significant improvement, I decided to increase my memory threshold to 90%.
+Despite these efforts, I had 13 unsuccessful builds before I managed to reduce memory usage to 79%. Since this wasn't a significant improvement, I decided to increase my memory threshold to 90%.
 
 If you take a look at my Jenkins file you will noticed that I added the following two lines to our build stage:
 
@@ -385,4 +385,6 @@ The potential issues with fully automated processes stem from the lack of human 
 
 I would address this by first implementing a comprehensive testing strategy combining manual and automated tests within our pipeline. Establishing a staging environment for pre-production validation is crucial. Integrating automated security scanning into the pipeline can proactively detect vulnerabilities. Finally, robust monitoring and alerting with automated rollback capabilities are essential in case problems arise.
 
-## Conclusion 
+## Conclusion
+
+This project successfully demonstrates the automation of the deployment process to AWS Elastic Beanstalk using Jenkins. By integrating a deployment stage into the CI/CD pipeline, we've significantly streamlined the release process, allowing for faster, more consistent, and reliable deployments. This automation not only reduces manual effort but also minimizes the risk of human error, making the deployment process more efficient and less prone to mistakes.
