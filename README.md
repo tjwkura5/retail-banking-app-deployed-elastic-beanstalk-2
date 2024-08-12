@@ -136,7 +136,7 @@ Note: Why are exit codes important? Especially if running the script through a C
 
 Once you save the pipeline a build should start automatically and if it's successful it should look like the following:
 
-![Successful Jenkins Build](documentation/build_14.png)
+![Successful Jenkins Build](documentation/Build_14.png)
 
 ![Pipeline Overview](documentation/pipeline_overview_14.png)
 
@@ -254,7 +254,7 @@ The **AWS Elastic Beanstalk Command Line Interface (EB CLI)** is a command-line 
 
 If the pipeline sucessfully completes, navigate to AWS Elastic Beanstalk in the AWS Console and check for the environment that is created. The application should be running at the domain created by Elastic Beanstalk.
 
-![Successful Jenkins Build Two](documentation/build_16_Final.png)
+![Successful Jenkins Build Two](documentation/Build_16_Final.png)
 
 ![Pipeline Overview Two](documentation/Build_16.png)
 
