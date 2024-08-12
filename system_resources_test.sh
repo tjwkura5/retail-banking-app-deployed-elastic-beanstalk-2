@@ -53,13 +53,8 @@ check_cpu() {
     # - 'awk '{print 100 - $1}'' calculates the CPU load by subtracting the idle percentage from 100.
     #     - '$1' refers to the idle percentage extracted by 'sed'.
     #     - The result is the percentage of CPU load (i.e., how much of the CPU is being used).
-    TOP_CPU=$(top -bn1 | grep "Cpu(s)")
-    echo $TOP_CPU
-
     CPU_LOAD=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
-    echo $CPU_LOAD
     CPU_INT=$(printf "%.0f" "$CPU_LOAD")
-
 
     if [ "$CPU_INT" -ge "$CPU_THRESHOLD" ]; then
         echo "Warning: CPU usage is at ${CPU_INT}% (Threshold: ${CPU_THRESHOLD}%)"

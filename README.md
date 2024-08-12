@@ -2,7 +2,7 @@
  
 ## Purpose
  
- In our last project we got an introduction to setting up a CI/CD pipeline for deploying an application to AWS Elastic Beanstalk. The problem was the CD part of our pipeline was still manual. This project aims to automate the deployment of code to AWS Elastic Beanstalk using Jenkins, eliminating the manual steps involved in the initial deployment process. Previously, the code was manually downloaded, zipped, and uploaded to Elastic Beanstalk. Now, the goal is for Jenkins to handle this automatically after building and testing.
+ In our last project we got an introduction to setting up a CI/CD pipeline for deploying an application to AWS Elastic Beanstalk. The problem was the CD part of our pipeline was still manual which is inefficient. This project aims to automate the deployment of code to AWS Elastic Beanstalk using Jenkins, eliminating the manual steps involved in our initial deployment process. Previously, we had to manually download, zip, and upload our code to Elastic Beanstalk. Now, the goal is for Jenkins to handle this automatically after building and testing.
 
  To achieve this, Jenkins requires:
 
@@ -10,7 +10,9 @@
 
 * **API Communication**: The ability to communicate with AWS Elastic Beanstalk APIs.
 
-* **Deployment Stage**: A new stage added to our jenkins file which contain Instructions on what commands to execute during the deployment stage after building and testing our application.
+* **Deployment Stage**: A new stage added to our jenkins file which contain instructions on what commands to execute during the deployment stage.
+
+Let's get started!!
 
 ## Clone Repository
 
@@ -65,9 +67,92 @@ Sharing your AWS access keys is dangerous because someone with these keys can po
 
 ## Create Bash Script to Test System Resources
 
-Note: Why are exit codes important? Especially if running the script through a CICD Pipeline?
+To enhance our testing process, we'll create a Bash script to monitor system resources (memory, CPU, disk space) during the Jenkins pipeline's testing stage. We'll employ Bash exit codes (0 for success, 1 for failure) to indicate resource thresholds. Bash exit codes are crucial for Jenkins to determine the success or failure of a build step. A non-zero exit code signifies an error or failure in the script, causing the entire build to fail. A zero exit code indicates successful completion.
 
 
+1. The first step is to create a "system_resources_test.sh" script in the root directory of our project
+
+2. Add the shebang directive "#!/bin/bash" to the top line of our script
+
+3. Create some variables to set our thresholds:
+
+    ```
+    # Set thresholds
+    MEMORY_THRESHOLD=90  # in percentage
+    CPU_THRESHOLD=60     # in percentage
+    DISK_THRESHOLD=70    # in percentage
+    ```
+4. Create a variable to initialize a flag to track if any threshold is exceeded
+
+    ```
+    # Initialize a flag to track if any threshold is exceeded
+    THRESHOLD_EXCEEDED=0
+    ```
+5. Create a function to check memory usage
+    ```
+    # Function to check memory usage
+    check_memory() {
+      MEMORY_USED=$(free | grep Mem | awk '{print $3/$2 * 100.0}')
+      MEMORY_INT=$(printf "%.0f" "$MEMORY_USED")
+      if [ "$MEMORY_INT" -ge "$MEMORY_THRESHOLD" ]; then
+          echo "Warning: Memory usage is at ${MEMORY_INT}% (Threshold: ${MEMORY_THRESHOLD}%)"
+        
+          THRESHOLD_EXCEEDED=1
+      else
+        echo "Memory usage is at ${MEMORY_INT}%"
+      fi
+    }
+    ```
+6. Create a function to check CPU usage
+    ```
+    # Function to check CPU usage
+    check_cpu() {
+        CPU_LOAD=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
+        echo $CPU_LOAD
+        CPU_INT=$(printf "%.0f" "$CPU_LOAD")
+
+
+        if [ "$CPU_INT" -ge "$CPU_THRESHOLD" ]; then
+            echo "Warning: CPU usage is at ${CPU_INT}% (Threshold: ${CPU_THRESHOLD}%)"
+            THRESHOLD_EXCEEDED=1
+        else
+            echo "CPU usage is at ${CPU_INT}%"
+        fi
+    }
+    ```
+7. create a function to check disk space usage
+   ```
+   # Function to check disk space usage
+    check_disk() {
+        DISK_USED=$(df / | grep / | awk '{ print $5}' | sed 's/%//g')
+        
+        if [ "$DISK_USED" -ge "$DISK_THRESHOLD" ]; then
+            echo "Warning: Disk usage is at ${DISK_USED}% (Threshold: ${DISK_THRESHOLD}%)"
+            THRESHOLD_EXCEEDED=1
+        else
+            echo "Disk usage is at ${DISK_USED}%"
+        fi
+    }
+   ```
+8. Call the functions we written to check system resources
+   ```
+   # Main script
+   echo "Checking system resources..."
+   sleep 5
+   check_cpu
+   check_memory
+   check_disk
+   ```
+9. Return the appropriate exit code based on our "THRESHOLD_EXCEEDED" flag
+   ```
+   # Exit with code 0 if all is well, or 1 if any threshold is exceeded
+    if [ "$THRESHOLD_EXCEEDED" -eq 1 ]; then
+        exit 1
+    else
+        exit 0
+    fi
+   ```
+10. Push your updates to the github repository
 
 ## Jenkins Server
 
@@ -185,7 +270,7 @@ The **AWS Elastic Beanstalk Command Line Interface (EB CLI)** is a command-line 
     source venv/bin/activate
     ```
 
-    **NOTE:** A Python virtual environment is an isolated environment that allows you to manage and maintain separate dependencies for different Python projects on the same system. It essentially creates a self-contained directory that includes its own Python interpreter, libraries, and scripts, independent of the global Python environment installed on your machine. This is crucial for preventing conflicts between different projects that may have different dependencies and allowing for different projects to use different Python versions. Our python environment venv was created during the build stage of our jenkins pipeline. 
+    **NOTE:** A Python virtual environment is an isolated environment that allows you to manage and maintain separate dependencies for different Python projects on the same system. You could think of it as a self-contained directory that includes its own Python interpreter, libraries, and scripts, independent of the global Python environment installed on your machine. This is crucial for preventing conflicts between different projects that may have different dependencies and allowing for different projects to use different Python versions. Our python environment "venv" was created during the build stage of our jenkins pipeline. 
 
 
 4. Configure AWS CLI with the folling command:
@@ -266,6 +351,18 @@ If the pipeline sucessfully completes, navigate to AWS Elastic Beanstalk in the 
 
 ## Optimization
 
-How is using a deploy stage in the CICD pipeline able to increase efficiency of the buisiness? What issues, if any, can you think of that might come with automating source code to a production environment? How would you address/resolve this?
+**How is using a deploy stage in the CICD pipeline able to increase efficiency of the buisiness?**
+
+* **Faster Releases:** Automates deployment, speeding up the release of features and bug fixes.
+* **Consistency:** Ensures reliable and consistent deployments, reducing downtime.
+* **Reduced Manual Effort:** Frees up developers to focus on cooler things by eliminating manual deployment steps.
+
+**What issues, if any, can you think of that might come with automating source code to a production environment?** 
+
+The potential issues with fully automated processes stem from the lack of human oversight. Security risks, service disruptions, data loss, and unintended bugs in production can arise without manual checks.
+
+**How would you address/resolve this?**
+
+The first step I would take is implement a comprehensive testing strategy combining manual and automated tests within our pipeline. Establishing a staging environment for pre-production validation is crucial. Integrating automated security scanning into the pipeline can proactively detect vulnerabilities. Finally, robust monitoring and alerting with automated rollback capabilities are essential in case problems arise.
 
 ## Conclusion 
