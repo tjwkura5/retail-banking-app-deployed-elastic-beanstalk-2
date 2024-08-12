@@ -1,5 +1,5 @@
-# Automate Deploying Retail Banking App to Elastic Beanstalk 
-
+# Retail Banking App Deployed to Elastic Beanstalk Two
+ 
 ## Purpose
  
  In our last project we got an introduction to setting up a CI/CD pipeline for deploying an application to AWS Elastic Beanstalk. The problem was the CD part of our pipeline was still manual. This project aims to automate the deployment of code to AWS Elastic Beanstalk using Jenkins, eliminating the manual steps involved in the initial deployment process. Previously, the code was manually downloaded, zipped, and uploaded to Elastic Beanstalk. Now, the goal is for Jenkins to handle this automatically after building and testing.
