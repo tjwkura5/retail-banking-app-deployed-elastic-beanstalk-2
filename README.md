@@ -385,6 +385,48 @@ The potential issues with fully automated processes stem from the lack of human 
 
 I would address this by first implementing a comprehensive testing strategy combining manual and automated tests within our pipeline. Establishing a staging environment for pre-production validation is crucial. Integrating automated security scanning into the pipeline can proactively detect vulnerabilities. Finally, robust monitoring and alerting with automated rollback capabilities are essential in case problems arise.
 
+## Nginx and Gunicorn
+
+When deploying a Flask app to AWS Elastic Beanstalk, Nginx and Gunicorn often play crucial roles in handling web requests and serving your application efficiently. Here's how they work together:
+
+### What is Nginx
+
+Nginx ("engine-x") is a web server and reverse proxy server. In the context of web applications, Nginx is often used to:
+
+* **Serve Static Files:** Nginx can efficiently serve static content (e.g., images, CSS, JavaScript) directly to the client.
+
+* **Reverse Proxy:** Nginx forwards client requests to backend servers (like Gunicorn) that actually process the requests, then returns the server's response to the client.
+
+### What is Gunicorn
+
+Gunicorn (Green Unicorn) is a Python WSGI (Web Server Gateway Interface) HTTP server. It serves as an intermediary between your Flask application and the web server (Nginx). Gunicorn's primary role is running your flask application.
+
+### How Nginx and Gunicorn work together
+
+When deploying a Flask app on Elastic Beanstalk, Nginx and Gunicorn typically work together in the following manner:
+
+1. **Client Request:**
+
+* A user accesses your Flask application by sending an HTTP or HTTPS request to your Elastic Beanstalk environment.
+
+2. **Nginx as the Frontend Web Server:**
+
+* Nginx receives the request because it listens on standard web ports (80 for HTTP and 443 for HTTPS). If the request is for a static file (e.g., an image or CSS file), Nginx serves it directly from its file system, which is faster and more efficient.
+
+3. **Nginx as a Reverse Proxy:**
+
+* For dynamic requests that require Flask's logic, Nginx forwards the request to Gunicorn, which is running your Flask application. Nginx acts as a reverse proxy here, forwarding requests to Gunicorn on a specific port, like internal port 8000 in our case. 
+
+4. **Gunicorn as the Application Server:**
+
+* Gunicorn receives the forwarded request from Nginx and executes your Flask application code to process the request. 
+
+5. **Response Handling:**
+
+* Once the Flask application generates a response, Gunicorn sends it back to Nginx.
+Nginx then sends the final response back to the client.
+
+
 ## Conclusion
 
 This project successfully demonstrates the automation of the deployment process to AWS Elastic Beanstalk using Jenkins. By integrating a deployment stage into the CI/CD pipeline, we've significantly streamlined the release process, allowing for faster, more consistent, and reliable deployments. This automation not only reduces manual effort but also minimizes the risk of human error, making the deployment process more efficient and less prone to mistakes.
