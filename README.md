@@ -36,7 +36,7 @@ Let's get started!!
     ```
     git push -u https://tjwkura5:{ACCESS_CODE}@github.com/tjwkura5/retail-banking-app-deployed-elastic-beanstalk-2.git main
 
-    sudo rm -rf /*/*/*/Kura_code/C5-Deployment-Workload-1
+    sudo rm -rf /*/*/*/Kura_code/C5-Deployment-Workload-2
     ```
 ## Create AWS Access Keys
 
