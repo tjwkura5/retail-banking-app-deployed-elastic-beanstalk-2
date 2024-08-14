@@ -369,6 +369,17 @@ In the last project, I encountered an issue with how we were zipping and uploadi
 
 In hindsight, I don't think that this was needed since none of the stages in my pipeline explicitly interact with the running Flask application. Also, having the Flask app running in the background probably contributed to the spike in memory usage. When the Flask application is started, it consumes memory to load the application, its dependencies, and any other resources it needs to operate.
 
+One thing I didn’t consider when creating my system resources script was the buff/cache column. When I run the free command, I see a column in the output for buff/cache:
+
+```
+              total        used        free      shared  buff/cache   available
+Mem:        16276408    11373100     2823104      104280     2066204     4420396
+Swap:       8388604          0     8388604
+```
+I didn’t understand what this meant before, but I recently learned from a classmate that the buff/cache represents the combined amount of memory used for both buffers and cache. Buffers are temporary storage used during I/O operations, while cache is memory used to store frequently accessed data to speed up operations.
+
+In the future, I will take this into consideration when running a script to check system resources, especially if I’m using an instance like t2.micro, which has limited memory. 
+
 ## Optimization
 
 **How is using a deploy stage in the CICD pipeline able to increase efficiency of the buisiness?**
